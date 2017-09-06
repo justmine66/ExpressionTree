@@ -18,6 +18,7 @@ namespace Test
             var provider = new CnblogsQueryProvider();
             var queryable = new Query<Post>(provider);
 
+
             var query = from p in queryable
                         where p.Diggs >= 10 &&
                         p.Comments > 10 &&
