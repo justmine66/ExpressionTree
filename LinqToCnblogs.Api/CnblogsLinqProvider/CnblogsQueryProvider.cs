@@ -24,7 +24,7 @@ namespace LinqToCnblogs.Api.CnblogsLinqProvider
             criteria = new PostExpressionVisitor().ProcessExpression(expression);
 
             //生成URL
-            string url = PostHelper.BuildUrl(criteria);
+            string url = PostHelper.BuildUrl(criteria, @"http://localhost/api/Cnblogs");
 
             return url;
         }

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Threading.Tasks;
 using System.Xml.Linq;
 
@@ -17,7 +18,7 @@ namespace LinqToCnblogs.Api.Infrastructure
 
         static PostManager()
         {
-            _serviceUrl = "http://wcf.open.cnblogs.com/blog/sitehome/recent/100000";
+            _serviceUrl = "http://wcf.open.cnblogs.com/blog/sitehome/recent/20";
 
             //初始加载
             loadPostsFromCnblogs();
@@ -41,9 +42,12 @@ namespace LinqToCnblogs.Api.Infrastructure
             lock (_obj)
             {
                 _posts = new List<Post>();
-                var document = XDocument.Load(_serviceUrl);
 
-                var elements = document.Root.Elements();
+                var content = ResponseContentAsync(_serviceUrl).Result;
+
+                var document = XElement.Parse(content);
+
+                var elements = document.Elements();
                 var result = from entry in elements
                              where entry.HasElements
                              select new Post
@@ -81,6 +85,14 @@ namespace LinqToCnblogs.Api.Infrastructure
 
                 _posts.AddRange(result);
                 _lastModified = DateTime.UtcNow;
+            }
+        }
+
+        private static async Task<string> ResponseContentAsync(string uri)
+        {
+            using (var httClient = new HttpClient())
+            {
+                return await httClient.GetStringAsync(uri);
             }
         }
     }

@@ -92,26 +92,26 @@ namespace LinqToCnblogs.Api.CnblogsLinqProvider
         private void VisitGreaterThanOrEqual(BinaryExpression expr)
         {
             // 处理 Diggs >= n  推荐人数
-            this.SetMemberIntValueFromExpr("Diggs", expr);
+            this.SetMemberIntValueFromExpr("MinDiggs", "Diggs", expr);
             // 处理 Views >= n   访问人数
-            this.SetMemberIntValueFromExpr("Views", expr);
+            this.SetMemberIntValueFromExpr("MinViews", "Views", expr);
             // 处理 Views >= n   评论数
-            this.SetMemberIntValueFromExpr("Comments", expr);
-            // 处理 发布时间>=
-            this.SetMemberDTValueFromExpr("Published", expr);
+            this.SetMemberIntValueFromExpr("MinComments", "Comments", expr);
+            // 处理 发布时间 >=
+            this.SetMemberDTValueFromExpr("Start", "Published", expr);
         }
 
         //访问 <=
         private void VisitLessThanOrEqual(BinaryExpression expr)
         {
-            // 处理 Diggs >= n  推荐人数
-            this.SetMemberIntValueFromExpr("MaxDiggs ", expr);
-            // 处理 Views >= n   访问人数
-            this.SetMemberIntValueFromExpr("MaxViews", expr);
-            // 处理 Views >= n   评论数
-            this.SetMemberIntValueFromExpr("MaxComments", expr);
-            // 处理 发布时间>=
-            this.SetMemberDTValueFromExpr("End", expr);
+            // 处理 Diggs <= n  推荐人数
+            this.SetMemberIntValueFromExpr("MaxDiggs","Diggs", expr);
+            // 处理 Views <= n   访问人数
+            this.SetMemberIntValueFromExpr("MaxViews", "Views", expr);
+            // 处理 Views <= n   评论数
+            this.SetMemberIntValueFromExpr("MaxComments", "Comments", expr);
+            // 处理 发布时间 <=
+            this.SetMemberDTValueFromExpr("End", "Published", expr);
         }
 
         // 访问 方法调用
@@ -156,7 +156,7 @@ namespace LinqToCnblogs.Api.CnblogsLinqProvider
         }
 
         //根据成员名和表达式,设置成员数值
-        private void SetMemberIntValueFromExpr(string memberName, BinaryExpression expr)
+        private void SetMemberIntValueFromExpr(string propName, string memberName, BinaryExpression expr)
         {
             if (expr.Left.NodeType == ExpressionType.MemberAccess &&
                    (expr.Left as MemberExpression).Member.Name == memberName)
@@ -164,12 +164,12 @@ namespace LinqToCnblogs.Api.CnblogsLinqProvider
                 if (expr.Right.NodeType == ExpressionType.Constant)
                 {
                     if (int.TryParse((expr.Right as ConstantExpression).Value + string.Empty, out int result))
-                        this.SetPropertyValue(memberName, result);
+                        this.SetPropertyValue(propName, result);
                 }
                 else if (expr.Right.NodeType == ExpressionType.MemberAccess)
                 {
                     if (int.TryParse(this.GetMemberValue(expr.Right as MemberExpression) + string.Empty, out int result))
-                        this.SetPropertyValue(memberName, result);
+                        this.SetPropertyValue(propName, result);
                 }
                 else
                 {
@@ -179,7 +179,7 @@ namespace LinqToCnblogs.Api.CnblogsLinqProvider
         }
 
         //根据成员名和表达式,设置成员时间
-        private void SetMemberDTValueFromExpr(string memberName, BinaryExpression expr)
+        private void SetMemberDTValueFromExpr(string propName, string memberName, BinaryExpression expr)
         {
             if (expr.Left.NodeType == ExpressionType.MemberAccess &&
                    (expr.Left as MemberExpression).Member.Name == memberName)
@@ -187,12 +187,12 @@ namespace LinqToCnblogs.Api.CnblogsLinqProvider
                 if (expr.Right.NodeType == ExpressionType.Constant)
                 {
                     if (DateTime.TryParse((expr.Right as ConstantExpression).Value + string.Empty, out DateTime result))
-                        this.SetPropertyValue(memberName, result);
+                        this.SetPropertyValue(propName, result);
                 }
                 else if (expr.Right.NodeType == ExpressionType.MemberAccess)
                 {
                     if (DateTime.TryParse(this.GetMemberValue(expr.Right as MemberExpression) + string.Empty, out DateTime result))
-                        this.SetPropertyValue(memberName, result);
+                        this.SetPropertyValue(propName, result);
                 }
                 else
                 {

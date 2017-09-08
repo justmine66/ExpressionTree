@@ -6,9 +6,9 @@ using System.Reflection;
 
 namespace LinqToCnblogs.Api.CnblogsLinqProvider
 {
-    internal static class TypeSystem
+    public static class TypeSystem
     {
-        private static Type FindIEnumerable(Type seqType)
+        public static Type FindIEnumerable(Type seqType)
         {
             if (seqType == null || seqType == typeof(string))
                 return null;
@@ -38,12 +38,12 @@ namespace LinqToCnblogs.Api.CnblogsLinqProvider
             return null;
         }
 
-        internal static Type GetSequenceType(Type elementType)
+        public static Type GetSequenceType(Type elementType)
         {
             return typeof(IEnumerable<>).MakeGenericType(elementType);
         }
 
-        internal static Type GetElementType(Type seqType)
+        public static Type GetElementType(Type seqType)
         {
             Type ienum = FindIEnumerable(seqType);
             if (ienum == null)
@@ -51,24 +51,24 @@ namespace LinqToCnblogs.Api.CnblogsLinqProvider
             return ienum.GetGenericArguments()[0];
         }
 
-        internal static bool IsNullableType(Type type)
+        public static bool IsNullableType(Type type)
         {
             return type != null && type.IsConstructedGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
         }
 
-        internal static bool IsNullAssignable(Type type)
+        public static bool IsNullAssignable(Type type)
         {
             return !type.IsInstanceOfType(typeof(ValueType)) || IsNullableType(type);
         }
 
-        internal static Type GetNonNullableType(Type type)
+        public static Type GetNonNullableType(Type type)
         {
-            if (IsNullableType(type))
+            if (!IsNullableType(type))
                 return type.GetGenericArguments()[0];
             return type;
         }
 
-        internal static Type GetMemberType(MemberInfo mi)
+        public static Type GetMemberType(MemberInfo mi)
         {
             FieldInfo fi = mi as FieldInfo;
             if (fi != null)
